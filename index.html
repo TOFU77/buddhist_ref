@@ -791,17 +791,32 @@ function cleanWikiHtml(html) {
   ['script','style','nav','footer','.mw-jump-link','.navbox','.sidebar','.reflist','.mw-editsection'].forEach(sel => {
     doc.querySelectorAll(sel).forEach(el => el.remove());
   });
+  // 非記事ページのプレフィックス（ファイル・特別・カテゴリ等）は除外
+  const SKIP_NS = /^(ファイル|File|特別|Special|Wikipedia|Help|ヘルプ|利用者|User|Category|カテゴリ|Template|テンプレート|Portal|プロジェクト|Project):/i;
   doc.querySelectorAll('a[href]').forEach(a => {
     const href = a.getAttribute('href') || '';
     if (!href.startsWith('http')) {
       const title = decodeURIComponent(href.replace(/^\.\//, '').replace(/^\/wiki\//, '').split('#')[0]);
-      if (title && title !== '#') {
+      if (title && title !== '#' && !SKIP_NS.test(title)) {
         a.href = '#';
         a.setAttribute('data-wiki', title);
+      } else {
+        // ファイル等のリンクはクリック無効化
+        a.removeAttribute('href');
+        a.style.cursor = 'default';
+        a.style.color = 'inherit';
       }
     } else {
       a.target = '_blank';
       a.rel = 'noopener';
+    }
+  });
+  // 画像リンク（<a>内の<img>）も無効化
+  doc.querySelectorAll('a > img, figure a').forEach(a => {
+    const parent = a.closest('a');
+    if (parent && !parent.hasAttribute('data-wiki')) {
+      parent.removeAttribute('href');
+      parent.style.cursor = 'default';
     }
   });
   return doc.body.innerHTML;
