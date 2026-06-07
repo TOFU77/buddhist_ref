@@ -38,17 +38,20 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
+
+/* PC: wiki panel = right half */
 #wiki-panel {
-  width: 380px;
-  min-width: 280px;
+  flex: 0 0 50%;
   background: var(--wiki-bg);
   border-left: 1px solid var(--wiki-border);
-  display: flex;
+  display: none;
   flex-direction: column;
-  transition: transform 0.3s;
 }
-#wiki-panel.hidden { display: none; }
+#wiki-panel.wiki-open {
+  display: flex;
+}
 
 /* ── TOPBAR ── */
 #topbar {
@@ -59,6 +62,7 @@ body {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   min-height: 48px;
+  flex-shrink: 0;
 }
 #btn-back {
   background: none; border: 1px solid var(--border);
@@ -85,54 +89,84 @@ body {
 
 /* ── HOME ── */
 #screen-home {
+  flex-direction: row;
+  overflow: hidden;
+}
+#home-left {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 20px;
+  padding: 20px 16px;
+  border-right: 1px solid var(--border);
   overflow-y: auto;
 }
 #home-title {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 #home-title h1 {
-  font-size: 22px; color: var(--accent); letter-spacing: 0.15em;
+  font-size: 19px; color: var(--accent); letter-spacing: 0.1em;
 }
 #home-title p {
-  font-size: 12px; color: var(--text3); margin-top: 4px;
+  font-size: 11px; color: var(--text3); margin-top: 4px;
 }
-#bubble-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  width: 100%;
-  max-width: 500px;
-}
-.bubble {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px 12px;
-  cursor: pointer;
-  text-align: center;
-  transition: background 0.2s, transform 0.1s;
-  user-select: none;
-}
-.bubble:hover { background: var(--surface2); transform: scale(1.02); }
-.bubble:active { transform: scale(0.97); }
-.bubble-icon { font-size: 20px; margin-bottom: 6px; }
-.bubble-label { font-size: 13px; color: var(--text); line-height: 1.4; }
-.bubble-count { font-size: 10px; color: var(--text3); margin-top: 4px; }
-
 #credits {
-  margin-top: 28px;
+  margin-top: auto;
+  padding-top: 20px;
   text-align: center;
   font-size: 10px;
   color: var(--text3);
   line-height: 1.8;
-  max-width: 500px;
   width: 100%;
 }
 #credits a { color: var(--text3); text-decoration: underline; }
+
+/* bubble scroll area */
+#bubble-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px;
+}
+#bubble-scroll::-webkit-scrollbar { width: 4px; }
+#bubble-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+#bubble-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.15s, transform 0.1s;
+  user-select: none;
+}
+.bubble:hover { background: var(--surface2); transform: translateX(2px); }
+.bubble:active { transform: scale(0.98); }
+.bubble-icon { font-size: 18px; flex-shrink: 0; }
+.bubble-label { font-size: 13px; color: var(--text); line-height: 1.3; flex: 1; }
+.bubble-count { font-size: 10px; color: var(--text3); flex-shrink: 0; }
+
+/* home right = welcome panel */
+#home-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  color: var(--text3);
+  font-size: 13px;
+  line-height: 2;
+  text-align: center;
+}
 
 /* ── LIST ── */
 #screen-list {
@@ -142,8 +176,9 @@ body {
   padding: 12px 14px 8px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  font-size: 18px;
+  font-size: 17px;
   color: var(--accent);
+  flex-shrink: 0;
 }
 #columns-wrap {
   display: flex;
@@ -165,6 +200,7 @@ body {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   text-align: center;
+  flex-shrink: 0;
 }
 .col-scroll {
   flex: 1;
@@ -172,7 +208,6 @@ body {
   padding: 6px;
 }
 .col-scroll::-webkit-scrollbar { width: 4px; }
-.col-scroll::-webkit-scrollbar-track { background: transparent; }
 .col-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .entry-btn {
@@ -181,7 +216,7 @@ body {
   background: none;
   border: 1px solid transparent;
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 8px 10px 8px 13px;
   margin-bottom: 4px;
   cursor: pointer;
   text-align: left;
@@ -189,25 +224,17 @@ body {
   position: relative;
   overflow: hidden;
 }
-.entry-btn::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  border-radius: 3px 0 0 3px;
-}
 .entry-btn:hover { background: var(--surface2); border-color: var(--border); }
 .entry-title {
   font-size: 11px;
-  color: var(--text2);
-  line-height: 1.3;
+  line-height: 1.4;
   white-space: pre-wrap;
   word-break: break-all;
 }
 .entry-source {
   font-size: 10px;
   color: var(--text3);
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 /* ── DETAIL ── */
@@ -216,11 +243,11 @@ body {
   overflow-y: auto;
 }
 #detail-body {
-  padding: 20px 18px;
-  max-width: 640px;
+  padding: 20px 20px;
+  max-width: 680px;
 }
 .detail-source {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text3);
   margin-bottom: 4px;
 }
@@ -233,10 +260,10 @@ body {
 .detail-original {
   font-size: 13px;
   color: var(--text3);
-  line-height: 1.6;
-  margin-bottom: 12px;
+  line-height: 1.7;
+  margin-bottom: 14px;
   font-style: italic;
-  padding: 10px;
+  padding: 10px 12px;
   background: var(--surface);
   border-radius: 6px;
   border-left: 3px solid var(--border);
@@ -244,8 +271,8 @@ body {
 .detail-translation {
   font-size: 15px;
   color: var(--text);
-  line-height: 1.8;
-  margin-bottom: 16px;
+  line-height: 1.9;
+  margin-bottom: 14px;
 }
 .detail-theme {
   display: inline-block;
@@ -254,10 +281,9 @@ body {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 3px 10px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 .wiki-links {
-  margin-top: 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -284,6 +310,7 @@ body {
   background: var(--wiki-surface);
   border-bottom: 1px solid var(--wiki-border);
   min-height: 48px;
+  flex-shrink: 0;
 }
 #wiki-search-input {
   flex: 1;
@@ -306,6 +333,10 @@ body {
   font-size: 12px;
 }
 #wiki-search-btn:hover { background: var(--wiki-border); }
+#wiki-close-btn {
+  background: none; border: none;
+  color: var(--text3); cursor: pointer; font-size: 18px; padding: 2px 4px;
+}
 #wiki-nav-bar {
   display: flex;
   align-items: center;
@@ -313,6 +344,7 @@ body {
   padding: 6px 10px;
   background: var(--wiki-surface);
   border-bottom: 1px solid var(--wiki-border);
+  flex-shrink: 0;
 }
 #wiki-nav-bar button {
   background: none;
@@ -335,9 +367,9 @@ body {
 #wiki-content-area {
   flex: 1;
   overflow-y: auto;
-  padding: 14px;
+  padding: 14px 16px;
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 1.75;
   color: var(--text);
 }
 #wiki-content-area::-webkit-scrollbar { width: 4px; }
@@ -345,31 +377,24 @@ body {
 #wiki-content-area a { color: #88aae8; text-decoration: none; cursor: pointer; }
 #wiki-content-area a:hover { text-decoration: underline; }
 #wiki-content-area h1,
-#wiki-content-area h2 { font-size: 15px; color: var(--accent); margin: 14px 0 6px; }
+#wiki-content-area h2 { font-size: 15px; color: var(--accent); margin: 14px 0 6px; border-bottom: 1px solid var(--wiki-border); padding-bottom: 4px; }
 #wiki-content-area h3 { font-size: 13px; color: var(--text2); margin: 10px 0 4px; }
 #wiki-content-area p { margin-bottom: 10px; }
 #wiki-content-area table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 11px; }
 #wiki-content-area td, #wiki-content-area th {
-  border: 1px solid var(--wiki-border);
-  padding: 4px 6px;
-  vertical-align: top;
+  border: 1px solid var(--wiki-border); padding: 4px 6px; vertical-align: top;
 }
-#wiki-content-area img { max-width: 100%; height: auto; display: block; margin: 8px auto; }
-#wiki-content-area .infobox,
-#wiki-content-area .wikitable { font-size: 11px; }
+#wiki-content-area img { max-width: 100%; height: auto; display: block; margin: 8px auto; border-radius: 4px; }
 .wiki-placeholder {
-  color: var(--text3);
-  text-align: center;
-  padding: 40px 20px;
-  font-size: 13px;
-  line-height: 1.8;
+  color: var(--text3); text-align: center;
+  padding: 40px 20px; font-size: 13px; line-height: 2;
 }
 
 /* ── HISTORY PANEL ── */
 #history-panel {
   position: fixed;
   top: 0; right: 0;
-  width: 340px;
+  width: 320px;
   height: 100vh;
   background: var(--surface);
   border-left: 1px solid var(--border);
@@ -381,90 +406,57 @@ body {
 }
 #history-panel.open { transform: translateX(0); }
 #history-header {
-  display: flex;
-  align-items: center;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  gap: 8px;
+  display: flex; align-items: center;
+  padding: 12px 14px; border-bottom: 1px solid var(--border); gap: 8px;
 }
 #history-header h2 { flex: 1; font-size: 15px; color: var(--accent); }
-#btn-history-close {
-  background: none; border: none;
-  color: var(--text3); cursor: pointer; font-size: 18px;
-}
+#btn-history-close { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 18px; }
 #history-actions {
-  display: flex;
-  gap: 6px;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--border);
+  display: flex; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border);
 }
 .hist-action-btn {
-  flex: 1;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text2);
-  padding: 6px;
-  cursor: pointer;
-  font-size: 11px;
-  font-family: inherit;
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text2); padding: 6px;
+  cursor: pointer; font-size: 11px; font-family: inherit;
 }
 .hist-action-btn:hover { background: var(--border); }
-#history-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px;
-}
+#history-list { flex: 1; overflow-y: auto; padding: 8px; }
 .hist-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  padding: 8px;
-  margin-bottom: 4px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  cursor: pointer;
+  display: flex; align-items: flex-start; gap: 6px;
+  padding: 8px; margin-bottom: 4px; border-radius: 6px;
+  border: 1px solid transparent; cursor: pointer;
 }
 .hist-item:hover { background: var(--surface2); border-color: var(--border); }
 .hist-item-content { flex: 1; }
 .hist-item-title { font-size: 13px; color: var(--text); }
 .hist-item-date { font-size: 10px; color: var(--text3); margin-top: 2px; }
 .hist-item-del {
-  background: none; border: none;
-  color: var(--text3); cursor: pointer;
-  font-size: 14px; padding: 2px 4px;
-  flex-shrink: 0;
+  background: none; border: none; color: var(--text3);
+  cursor: pointer; font-size: 14px; padding: 2px 4px; flex-shrink: 0;
 }
 .hist-item-del:hover { color: #e07070; }
 
-/* ── MOBILE OVERLAY ── */
+/* ── MOBILE ── */
 @media (max-width: 700px) {
+  #home-left { width: 100%; border-right: none; }
+  #home-right { display: none; }
   #wiki-panel {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 100;
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 100; flex: none;
     transform: translateX(100%);
     transition: transform 0.3s;
     border-left: none;
   }
-  #wiki-panel.visible { transform: translateX(0); display: flex; }
-  #wiki-panel.hidden { display: flex; transform: translateX(100%); }
+  #wiki-panel.wiki-open { transform: translateX(0); display: flex; }
   #history-panel { width: 90vw; }
-}
-@media (min-width: 701px) {
-  #wiki-panel.hidden { display: none; }
-  #wiki-panel:not(.hidden) { display: flex; }
+  #bubble-grid { gap: 6px; }
 }
 
-/* ── OVERLAY BACKDROP ── */
+/* ── OVERLAY ── */
 #overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 150;
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 150;
 }
 #overlay.active { display: block; }
 </style>
@@ -475,27 +467,35 @@ body {
   <div id="main-area">
     <!-- Topbar -->
     <div id="topbar">
-      <button id="btn-back" onclick="goBack()">← 戻る</button>
+      <button id="btn-back" onclick="goBack()" style="display:none">← 戻る</button>
       <span id="topbar-title">Buddhist Reference</span>
       <button id="btn-history" onclick="toggleHistory()">足跡</button>
     </div>
 
-    <!-- Home Screen -->
+    <!-- Home -->
     <div id="screen-home" class="screen active">
-      <div id="home-title">
-        <h1>Buddhist Reference</h1>
-        <p>仏教・世界古典の聖句辞典</p>
+      <div id="home-left">
+        <div id="home-title">
+          <h1>Buddhist Reference</h1>
+          <p>仏教・世界古典の聖句辞典</p>
+        </div>
+        <div id="bubble-scroll">
+          <div id="bubble-grid"></div>
+        </div>
+        <div id="credits">
+          <div style="margin-bottom:4px;">Based on</div>
+          <a href="https://gemini.google.com/gem/17g6lWfuPXWQSnBp1BL_4uXowsieCaZN9?usp=sharing" target="_blank">Gemini先祖アプリ</a>
+          &nbsp;|&nbsp;
+          <a href="https://chatgpt.com/g/g-68d50a8b33148191a4e6ddb5c5b8facf-olcfo-jiao-jing-dian-can-zhao" target="_blank">ChatGPT先祖アプリ</a>
+        </div>
       </div>
-      <div id="bubble-grid"></div>
-      <div id="credits">
-        <div style="margin-bottom:6px;color:var(--text3);font-size:11px;">Based on</div>
-        <a href="https://gemini.google.com/gem/17g6lWfuPXWQSnBp1BL_4uXowsieCaZN9?usp=sharing" target="_blank">Gemini先祖アプリ</a>
-        &nbsp;|&nbsp;
-        <a href="https://chatgpt.com/g/g-68d50a8b33148191a4e6ddb5c5b8facf-olcfo-jiao-jing-dian-can-zhao" target="_blank">ChatGPT先祖アプリ</a>
+      <div id="home-right">
+        カテゴリを選んで<br>教えを探す<br><br>
+        <span style="font-size:11px;">← 左のバブルをタップ</span>
       </div>
     </div>
 
-    <!-- List Screen -->
+    <!-- List -->
     <div id="screen-list" class="screen">
       <div id="list-header"></div>
       <div id="columns-wrap">
@@ -510,18 +510,19 @@ body {
       </div>
     </div>
 
-    <!-- Detail Screen -->
+    <!-- Detail -->
     <div id="screen-detail" class="screen">
       <div id="detail-body"></div>
     </div>
   </div>
 
-  <!-- Wiki Panel -->
-  <div id="wiki-panel" class="hidden">
+  <!-- Wiki Panel (right half on PC) -->
+  <div id="wiki-panel">
     <div id="wiki-topbar">
-      <input id="wiki-search-input" type="text" placeholder="Wikipedia 検索…" onkeydown="if(event.key==='Enter')wikiSearch()">
+      <input id="wiki-search-input" type="text" placeholder="Wikipedia 検索…"
+             onkeydown="if(event.key==='Enter')wikiSearch()">
       <button id="wiki-search-btn" onclick="wikiSearch()">検索</button>
-      <button onclick="closeWiki()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:2px 6px;">✕</button>
+      <button id="wiki-close-btn" onclick="closeWiki()" title="閉じる">✕</button>
     </div>
     <div id="wiki-nav-bar">
       <button onclick="wikiNavBack()">◀</button>
@@ -530,8 +531,8 @@ body {
     </div>
     <div id="wiki-content-area">
       <div class="wiki-placeholder">
-        Wikipediaの記事を表示します。<br>
-        上の検索欄でキーワードを入力するか、<br>
+        Wikipedia 記事を表示します。<br>
+        検索欄にキーワードを入力するか、<br>
         教えの詳細画面でリンクをタップしてください。
       </div>
     </div>
@@ -580,25 +581,28 @@ const ALL_DBS = [
 ];
 
 const CATEGORIES = [
-  { name:"執着・無明・悪", icon:"🌑" },
-  { name:"争い・諍い", icon:"⚔️" },
-  { name:"病・老い・死後", icon:"🍂" },
-  { name:"家族・友人", icon:"🏠" },
-  { name:"身分・義務", icon:"⚖️" },
-  { name:"経済・利益", icon:"💰" },
-  { name:"天下・国家", icon:"🏛️" },
-  { name:"修身", icon:"🧘" },
-  { name:"真理・因果・言葉", icon:"📿" },
-  { name:"喜び・安らぎ・救済", icon:"✨" },
+  { name:"執着・無明・悪",     icon:"🌑" },
+  { name:"争い・諍い",         icon:"⚔️" },
+  { name:"病・老い・死後",     icon:"🍂" },
+  { name:"家族・友人",         icon:"🏠" },
+  { name:"身分・義務",         icon:"⚖️" },
+  { name:"経済・利益",         icon:"💰" },
+  { name:"天下・国家",         icon:"🏛️" },
+  { name:"修行・禅定・行持",   icon:"🧘" },
+  { name:"倫理・日常・節制",   icon:"🪔" },
+  { name:"真理・空・実在",     icon:"🔮" },
+  { name:"因果・業・運命",     icon:"⚙️" },
+  { name:"言葉・認識・知",     icon:"📜" },
+  { name:"喜び・平和・幸福",   icon:"☀️" },
+  { name:"救済・悟り・解脱",   icon:"✨" },
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let currentScreen = 'home';
 let currentCatIdx = -1;
-let currentEntryId = null;
-let wikiHistory = [];
-let wikiPos = -1;
 let historyStack = JSON.parse(localStorage.getItem('br_history') || '[]');
+let wikiNavStack = [];
+let wikiNavIdx = -1;
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────
 function showScreen(name) {
@@ -610,21 +614,20 @@ function showScreen(name) {
 
 function goBack() {
   if (currentScreen === 'detail') showScreen('list');
-  else showScreen('home');
+  else { showScreen('home'); }
 }
 
 // ── HOME ──────────────────────────────────────────────────────────────────
 function buildHome() {
-  document.getElementById('btn-back').style.display = 'none';
   const grid = document.getElementById('bubble-grid');
   grid.innerHTML = '';
   CATEGORIES.forEach((cat, idx) => {
     const count = countForCat(idx);
     const div = document.createElement('div');
     div.className = 'bubble';
-    div.innerHTML = `<div class="bubble-icon">${cat.icon}</div>
-      <div class="bubble-label">${cat.name}</div>
-      <div class="bubble-count">${count} 件</div>`;
+    div.innerHTML = `<span class="bubble-icon">${cat.icon}</span>
+      <span class="bubble-label">${cat.name}</span>
+      <span class="bubble-count">${count}</span>`;
     div.onclick = () => showList(idx);
     grid.appendChild(div);
   });
@@ -632,20 +635,22 @@ function buildHome() {
 
 function countForCat(idx) {
   let n = 0;
-  ALL_DBS.forEach(db => db.entries.forEach(e => { if (e.cats && e.cats.includes(idx)) n++; }));
+  ALL_DBS.forEach(db => db && db.entries.forEach(e => {
+    if (e.cats && e.cats.includes(idx)) n++;
+  }));
   return n;
 }
 
 // ── LIST ──────────────────────────────────────────────────────────────────
 function showList(catIdx) {
   currentCatIdx = catIdx;
-  document.getElementById('list-header').textContent =
-    CATEGORIES[catIdx].icon + ' ' + CATEGORIES[catIdx].name;
-  document.getElementById('topbar-title').textContent = CATEGORIES[catIdx].name;
+  const cat = CATEGORIES[catIdx];
+  document.getElementById('list-header').textContent = cat.icon + ' ' + cat.name;
+  document.getElementById('topbar-title').textContent = cat.name;
 
-  const buddhist = [];
-  const other = [];
+  const buddhist = [], other = [];
   ALL_DBS.forEach(db => {
+    if (!db) return;
     db.entries.forEach(e => {
       if (e.cats && e.cats.includes(catIdx)) {
         (db.type === 'B' ? buddhist : other).push({ entry: e, db });
@@ -661,19 +666,17 @@ function showList(catIdx) {
 function renderCol(colId, items) {
   const col = document.getElementById(colId);
   col.innerHTML = '';
-  if (items.length === 0) {
+  if (!items.length) {
     col.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px;font-size:12px;">該当なし</div>';
     return;
   }
   items.forEach(({ entry, db }) => {
     const btn = document.createElement('button');
     btn.className = 'entry-btn';
-    btn.style.setProperty('--c', db.color);
-    btn.querySelector = null;
-    // color bar
-    btn.innerHTML = `<div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${db.color};border-radius:3px 0 0 3px;"></div>
-      <div class="entry-title" style="color:${db.color};filter:brightness(1.5);">${entry.訳文 || entry.章句}</div>
-      <div class="entry-source">${entry.典籍} ${entry.章句}</div>`;
+    btn.innerHTML =
+      `<div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${db.color};border-radius:3px 0 0 3px;"></div>` +
+      `<div class="entry-title" style="color:${db.color};filter:brightness(1.4);">${escHTML(entry.訳文 || entry.章句)}</div>` +
+      `<div class="entry-source">${escHTML(entry.典籍)} ${escHTML(entry.章句)}</div>`;
     btn.onclick = () => showDetail(entry.id);
     col.appendChild(btn);
   });
@@ -682,6 +685,7 @@ function renderCol(colId, items) {
 // ── DETAIL ────────────────────────────────────────────────────────────────
 function findEntry(id) {
   for (const db of ALL_DBS) {
+    if (!db) continue;
     const e = db.entries.find(x => x.id === id);
     if (e) return { entry: e, db };
   }
@@ -689,7 +693,6 @@ function findEntry(id) {
 }
 
 function showDetail(entryId) {
-  currentEntryId = entryId;
   const found = findEntry(entryId);
   if (!found) return;
   const { entry, db } = found;
@@ -697,34 +700,29 @@ function showDetail(entryId) {
 
   const keywords = buildKeywords(entry);
   const linksHtml = keywords.map(kw =>
-    `<button class="wiki-link-btn" onclick="openWiki('${escJS(kw)}')">${kw}</button>`
+    `<button class="wiki-link-btn" onclick="openWiki('${escJS(kw)}')">${escHTML(kw)}</button>`
   ).join('');
 
-  document.getElementById('detail-body').innerHTML = `
-    <div class="detail-source" style="color:${db.color}">${db.title} — ${entry.典籍}</div>
-    <div class="detail-chapter">${entry.章句}</div>
-    ${entry.原文 ? `<div class="detail-original">${escHTML(entry.原文)}</div>` : ''}
-    <div class="detail-translation">${escHTML(entry.訳文)}</div>
-    <div class="detail-theme">${escHTML(entry.主題)}</div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">Wikipedia で調べる：</div>
-    <div class="wiki-links">${linksHtml}</div>
-  `;
+  document.getElementById('detail-body').innerHTML =
+    `<div class="detail-source" style="color:${db.color}">${escHTML(db.title)} — ${escHTML(entry.典籍)}</div>` +
+    `<div class="detail-chapter">${escHTML(entry.章句)}</div>` +
+    (entry.原文 ? `<div class="detail-original">${escHTML(entry.原文)}</div>` : '') +
+    `<div class="detail-translation">${escHTML(entry.訳文)}</div>` +
+    `<div class="detail-theme">${escHTML(entry.主題)}</div>` +
+    `<div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Wikipedia で調べる：</div>` +
+    `<div class="wiki-links">${linksHtml}</div>`;
   showScreen('detail');
 }
 
 function buildKeywords(entry) {
   const kws = new Set();
-  // typicヌ: source, chapter, theme words
   if (entry.典籍) kws.add(entry.典籍.split('『')[0].split('・')[0].trim());
   if (entry.章句) {
-    const m = entry.章句.replace(/[0-9:・．\-]/g, '').trim();
+    const m = entry.章句.replace(/[0-9:・．\-:]/g, '').trim();
     if (m.length >= 2) kws.add(m);
   }
   if (entry.主題) {
-    entry.主題.split(/[・・,、]/).forEach(t => {
-      const s = t.trim();
-      if (s.length >= 2) kws.add(s);
-    });
+    entry.主題.split(/[・,、]/).forEach(t => { const s = t.trim(); if (s.length >= 2) kws.add(s); });
   }
   if (entry.出典ID) {
     const base = entry.出典ID.replace(/[0-9:\- ]/g,'').trim();
@@ -740,15 +738,11 @@ function openWiki(title) {
 }
 
 function showWikiPanel() {
-  const p = document.getElementById('wiki-panel');
-  p.classList.remove('hidden');
-  p.classList.add('visible');
+  document.getElementById('wiki-panel').classList.add('wiki-open');
 }
 
 function closeWiki() {
-  const p = document.getElementById('wiki-panel');
-  p.classList.add('hidden');
-  p.classList.remove('visible');
+  document.getElementById('wiki-panel').classList.remove('wiki-open');
 }
 
 function wikiSearch() {
@@ -767,7 +761,7 @@ async function searchAndLoad(query) {
     if (data[1] && data[1].length > 0) {
       loadWikiPage(data[1][0]);
     } else {
-      setWikiContent('<div class="wiki-placeholder">「' + escHTML(query) + '」は見つかりませんでした。</div>');
+      setWikiContent(`<div class="wiki-placeholder">「${escHTML(query)}」は見つかりませんでした。</div>`);
     }
   } catch(e) {
     setWikiContent('<div class="wiki-placeholder">検索に失敗しました。</div>');
@@ -777,18 +771,13 @@ async function searchAndLoad(query) {
 async function loadWikiPage(title) {
   setWikiLoading(title + ' を読み込み中…');
   document.getElementById('wiki-current-title').textContent = title;
+  document.getElementById('wiki-search-input').value = title;
   try {
     const url = `https://ja.wikipedia.org/api/rest_v1/page/html/${encodeURIComponent(title)}`;
     const res = await fetch(url);
-    if (!res.ok) {
-      // try search fallback
-      await searchAndLoad(title);
-      return;
-    }
+    if (!res.ok) { await searchAndLoad(title); return; }
     const html = await res.text();
-    const cleaned = cleanWikiHtml(html);
-    setWikiContent(cleaned);
-    addWikiHistory(title);
+    setWikiContent(cleanWikiHtml(html));
     pushWikiNav(title);
     addToHistoryStack(title);
   } catch(e) {
@@ -799,23 +788,20 @@ async function loadWikiPage(title) {
 function cleanWikiHtml(html) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
-  // remove script, style, nav, footer, .sidebar, .toc
-  ['script','style','nav','footer','.mw-jump-link','.navbox','.sidebar','.reflist'].forEach(sel => {
+  ['script','style','nav','footer','.mw-jump-link','.navbox','.sidebar','.reflist','.mw-editsection'].forEach(sel => {
     doc.querySelectorAll(sel).forEach(el => el.remove());
   });
-  // fix links
   doc.querySelectorAll('a[href]').forEach(a => {
-    const href = a.getAttribute('href');
-    if (href && !href.startsWith('http')) {
-      const title = decodeURIComponent(href.replace(/^\/wiki\//, '').split('#')[0]);
-      if (title) {
-        a.setAttribute('href', '#');
+    const href = a.getAttribute('href') || '';
+    if (!href.startsWith('http')) {
+      const title = decodeURIComponent(href.replace(/^\.\//, '').replace(/^\/wiki\//, '').split('#')[0]);
+      if (title && title !== '#') {
+        a.href = '#';
         a.setAttribute('data-wiki', title);
-        a.onclick = (e) => { e.preventDefault(); loadWikiPage(title); };
       }
-    } else if (href && href.startsWith('http')) {
-      a.setAttribute('target', '_blank');
-      a.setAttribute('rel', 'noopener');
+    } else {
+      a.target = '_blank';
+      a.rel = 'noopener';
     }
   });
   return doc.body.innerHTML;
@@ -830,116 +816,89 @@ function setWikiContent(html) {
   const area = document.getElementById('wiki-content-area');
   area.innerHTML = html;
   area.scrollTop = 0;
-  // reattach link handlers for any remaining wiki links
   area.querySelectorAll('a[data-wiki]').forEach(a => {
-    a.onclick = (e) => { e.preventDefault(); loadWikiPage(a.getAttribute('data-wiki')); };
+    a.onclick = e => { e.preventDefault(); loadWikiPage(a.getAttribute('data-wiki')); };
   });
 }
-
-// Wiki nav stack (session only)
-let wikiNavStack = [];
-let wikiNavIdx = -1;
 
 function pushWikiNav(title) {
   wikiNavStack = wikiNavStack.slice(0, wikiNavIdx + 1);
   wikiNavStack.push(title);
   wikiNavIdx = wikiNavStack.length - 1;
 }
-
 function wikiNavBack() {
-  if (wikiNavIdx > 0) {
-    wikiNavIdx--;
-    loadWikiPage(wikiNavStack[wikiNavIdx]);
-  }
+  if (wikiNavIdx > 0) { wikiNavIdx--; loadWikiPage(wikiNavStack[wikiNavIdx]); }
 }
-
 function wikiNavForward() {
-  if (wikiNavIdx < wikiNavStack.length - 1) {
-    wikiNavIdx++;
-    loadWikiPage(wikiNavStack[wikiNavIdx]);
-  }
+  if (wikiNavIdx < wikiNavStack.length - 1) { wikiNavIdx++; loadWikiPage(wikiNavStack[wikiNavIdx]); }
 }
 
-// ── HISTORY STACK ─────────────────────────────────────────────────────────
+// ── HISTORY ───────────────────────────────────────────────────────────────
 function addToHistoryStack(title) {
   if (historyStack.length && historyStack[0].title === title) return;
   historyStack.unshift({ title, date: new Date().toLocaleString('ja-JP') });
-  if (historyStack.length > 200) historyStack = historyStack.slice(0, 200);
-  persistHistory();
-  renderHistoryList();
-}
-
-function addWikiHistory(title) {
-  addToHistoryStack(title);
-}
-
-function persistHistory() {
+  if (historyStack.length > 200) historyStack.length = 200;
   localStorage.setItem('br_history', JSON.stringify(historyStack));
+  renderHistoryList();
 }
 
 function renderHistoryList() {
   const list = document.getElementById('history-list');
   list.innerHTML = '';
-  if (historyStack.length === 0) {
+  if (!historyStack.length) {
     list.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px;font-size:12px;">履歴はありません</div>';
     return;
   }
   historyStack.forEach((item, idx) => {
     const div = document.createElement('div');
     div.className = 'hist-item';
-    div.innerHTML = `
-      <div class="hist-item-content" onclick="openWiki('${escJS(item.title)}');toggleHistory();">
-        <div class="hist-item-title">${escHTML(item.title)}</div>
-        <div class="hist-item-date">${escHTML(item.date)}</div>
-      </div>
-      <button class="hist-item-del" onclick="deleteHistItem(${idx})" title="削除">✕</button>
-    `;
+    div.innerHTML =
+      `<div class="hist-item-content">` +
+        `<div class="hist-item-title">${escHTML(item.title)}</div>` +
+        `<div class="hist-item-date">${escHTML(item.date)}</div>` +
+      `</div>` +
+      `<button class="hist-item-del" onclick="deleteHistItem(${idx})" title="削除">✕</button>`;
+    div.querySelector('.hist-item-content').onclick = () => {
+      openWiki(item.title);
+      toggleHistory();
+    };
     list.appendChild(div);
   });
 }
 
 function deleteHistItem(idx) {
   historyStack.splice(idx, 1);
-  persistHistory();
+  localStorage.setItem('br_history', JSON.stringify(historyStack));
   renderHistoryList();
 }
-
 function clearHistory() {
   if (confirm('すべての履歴を削除しますか？')) {
     historyStack = [];
-    persistHistory();
+    localStorage.setItem('br_history', '[]');
     renderHistoryList();
   }
 }
-
 function saveHistory() {
   const text = historyStack.map(h => `${h.date}\t${h.title}`).join('\n');
-  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
   a.download = 'br_history.txt';
   a.click();
 }
-
 function loadHistory() {
   const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.txt';
+  input.type = 'file'; input.accept = '.txt';
   input.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
-      const lines = ev.target.result.split('\n').filter(l => l.trim());
-      const items = lines.map(l => {
-        const parts = l.split('\t');
-        return { date: parts[0] || '', title: parts[1] || l.trim() };
+      historyStack = ev.target.result.split('\n').filter(l => l.trim()).map(l => {
+        const p = l.split('\t');
+        return { date: p[0] || '', title: p[1] || l.trim() };
       }).filter(h => h.title);
-      historyStack = items;
-      persistHistory();
+      localStorage.setItem('br_history', JSON.stringify(historyStack));
       renderHistoryList();
     };
-    reader.readAsText(file, 'utf-8');
+    reader.readAsText(e.target.files[0], 'utf-8');
   };
   input.click();
 }
@@ -947,46 +906,34 @@ function loadHistory() {
 function toggleHistory() {
   const p = document.getElementById('history-panel');
   const o = document.getElementById('overlay');
-  const isOpen = p.classList.contains('open');
-  if (isOpen) {
-    p.classList.remove('open');
-    o.classList.remove('active');
+  if (p.classList.contains('open')) {
+    p.classList.remove('open'); o.classList.remove('active');
   } else {
-    renderHistoryList();
-    p.classList.add('open');
-    o.classList.add('active');
+    renderHistoryList(); p.classList.add('open'); o.classList.add('active');
   }
 }
-
 function closeOverlays() {
   document.getElementById('history-panel').classList.remove('open');
   document.getElementById('overlay').classList.remove('active');
 }
 
-// ── MOBILE SWIPE ──────────────────────────────────────────────────────────
-let touchStartX = 0;
-document.addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-}, { passive: true });
+// ── SWIPE (mobile: right swipe = history) ────────────────────────────────
+let _tx = 0;
+document.addEventListener('touchstart', e => { _tx = e.touches[0].clientX; }, { passive: true });
 document.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  if (dx > 80) {
-    // right swipe: open history
-    const hist = document.getElementById('history-panel');
-    if (!hist.classList.contains('open')) {
-      toggleHistory();
-    }
+  if (e.changedTouches[0].clientX - _tx > 80) {
+    if (!document.getElementById('history-panel').classList.contains('open')) toggleHistory();
   }
 }, { passive: true });
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
 function escHTML(s) {
   if (!s) return '';
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function escJS(s) {
   if (!s) return '';
-  return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
