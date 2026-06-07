@@ -918,10 +918,18 @@ function closeOverlays() {
 }
 
 // ── SWIPE (mobile: right swipe = history) ────────────────────────────────
-let _tx = 0;
-document.addEventListener('touchstart', e => { _tx = e.touches[0].clientX; }, { passive: true });
+let _tx = 0, _ty = 0, _tt = 0;
+document.addEventListener('touchstart', e => {
+  _tx = e.touches[0].clientX;
+  _ty = e.touches[0].clientY;
+  _tt = Date.now();
+}, { passive: true });
 document.addEventListener('touchend', e => {
-  if (e.changedTouches[0].clientX - _tx > 80) {
+  const dx = e.changedTouches[0].clientX - _tx;
+  const dy = Math.abs(e.changedTouches[0].clientY - _ty);
+  const dt = Date.now() - _tt;
+  // 距離180px以上、縦ブレ60px以内、時間100〜600ms以内
+  if (dx > 180 && dy < 60 && dt > 100 && dt < 600) {
     if (!document.getElementById('history-panel').classList.contains('open')) toggleHistory();
   }
 }, { passive: true });
